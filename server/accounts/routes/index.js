@@ -8,20 +8,6 @@ mongoose.connect('mongodb://127.0.0.1:27017/accounts');
 var db = mongoose.connection;
 db.on('error',console.error.bind(console,'连接失败'));
 
-
-// Account.create({
-//   item: '购买食材',
-//       date: new Date(),
-//       amount: 50.00,
-//       category: 'expense',
-//       note: '购买了牛奶、面包和水果'
-// })
-
-router.all('/',function(req,res,next){
-  res.send('登陆界面')
-})
-
-
 /*记账本列表 */
 router.get('/accounts', function(req, res, next) {
   Account.find({})
