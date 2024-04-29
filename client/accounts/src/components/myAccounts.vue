@@ -102,7 +102,7 @@ export default {
     const updateAccount = async (account) =>{
       try {
         const response = await axios.put(`/accounts/${account._id}`, account);
-        console.log('Account updated successfully:', response.data);
+        //console.log('Account updated successfully:', response.data);
         // 处理更新成功后的逻辑
       } catch (error) {
         console.error('Error updating account:', error);
@@ -134,14 +134,30 @@ export default {
       });  
     }
     
-    onMounted(async () => {
-      try {
-        const response = await axios.get('/accounts');
-        accounts.value = response.data;
-      } catch (error) {
-        console.error('Error fetching accounts:', error);
-      }
-    })
+    onMounted(async () => {  
+      try {  
+        // 从localStorage中获取token，使用'token'作为键  
+        const token = localStorage.getItem('token');  
+        if (!token) {  
+          // 如果没有找到token，处理错误或重定向到登录页面  
+          console.error('Token not found in localStorage');  
+          return;  
+        }  
+  
+        // 设置axios请求的Authorization头  
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;  
+  
+        // 发送GET请求到/accounts  
+        const response = await axios.get('/accounts');  
+  
+        // 更新accounts响应式引用  
+        accounts.value = response.data;  
+  
+      } catch (error) {  
+        // 处理请求错误  
+        console.error(error);  
+      }  
+    });
 
     return { accounts,handleClose,categories,isEdit,toggleEdit,updateAccount,deleteAccount,createAccountsPage,myAccounts,addAccountsPageVis}
   }

@@ -1,8 +1,10 @@
 const express = require('express');
 var router=express.Router();
+const jwt = require('jsonwebtoken');
 
 const User = require('../model/UserSchema')
 var mongoose = require('mongoose');
+var Account = require('../model/AccountSchema');
 var userDB = mongoose.createConnection('mongodb://127.0.0.1:27017/user');
 
 //用户注册
@@ -18,6 +20,8 @@ router.post('/register',async function(req,res,next){
         }else{
             const newUser = new User({username,password});
             await newUser.save();
+            const newAccount = new Account({item:'请输入事项',date:Date.now(),amount:0,category:'income',note:'请输入备注',userid:newUser._id});
+            await newAccount.save();
             return res.json({message:'注册成功'});
         }
     }catch(error){
@@ -34,9 +38,9 @@ router.post('/login',async function(req,res,next){
         }else if(password!==user.password){
             return res.json({message:'密码不正确'});
         }else{
-            return res.json({message:'登陆成功'})
+            const token = jwt.sign({ userId: user._id }, 'tellrisk');
+            return res.json({message:'登陆成功',token:token})
         }
-
     }catch(error){
         console.log(error);
     }

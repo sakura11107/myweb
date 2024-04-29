@@ -20,7 +20,11 @@ const AccountSchema = new mongoose.Schema({
   },
   note: {
     type:String,
-    require:true
+    required:true
+  },
+  userid:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:'User'
   }
 });
 
