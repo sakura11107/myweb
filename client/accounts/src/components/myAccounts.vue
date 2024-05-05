@@ -17,18 +17,18 @@
           <el-col :span="8">
             <div class="item-name">
               <el-input v-model="account.item" v-if="isEdit(account)" />
-              <span v-else>{{ account.item }}</span>
+              <span v-else>事项：{{ account.item }}</span>
             </div>
           </el-col>
           <el-col :span="8">
             <div class="amount">
               <el-input v-model="account.amount" v-if="isEdit(account)" />
-              <span v-else>{{ account.amount }}</span>
+              <span v-else>金额：{{ account.amount }}RMB</span>
             </div>
           </el-col>
           <el-col :span="8">
             <div :class="{'category': true, 'expense': account.category === 'expense', 'income': account.category === 'income'}">
-              <span v-if="!isEdit(account)">{{ account.category }}</span>
+              <span v-if="!isEdit(account)">收入或支出：{{ account.category }}</span>
               <el-select v-model="account.category" v-if="isEdit(account)">
                 <el-option v-for="category in categories" :key="category" :label="category" :value="category" />
               </el-select>
@@ -38,13 +38,13 @@
         <el-row class="row">
           <el-col :span="12">
             <div class="date">
-              <span v-if="!isEdit(account)">{{ account.date }}</span>
-              <el-date-picker v-model="account.date" type="date" v-if="isEdit(account)" />
+              <span v-if="!isEdit(account)">日期：{{ account.date }}</span>
+              <el-date-picker v-model="account.date" type="datetime" v-if="isEdit(account)" />
             </div>
           </el-col>
           <el-col :span="12">
             <div class="note">
-              <span v-if="!isEdit(account) && account.note">{{ account.note }}</span>
+              <span v-if="!isEdit(account) && account.note">备注：{{ account.note }}</span>
               <span v-else-if="!isEdit(account) && !account.note">无备注</span>
               <el-input v-model="account.note" type="textarea" v-if="isEdit(account)" />
             </div>
@@ -65,22 +65,48 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
+import { computed } from 'vue';
 import axios from 'axios';
 import addAccounts from './addAccounts.vue'
 import { ElMessageBox } from 'element-plus'
 import { accountsStore } from '@/store/accountsStore';
+import { useaddStore } from '@/store/useaddStore';
+
 
 export default {
   name:'myAccounts',
   components:{addAccounts},
   setup() {
-    const accounts = ref([]);
+    
     const categories = ['expense', 'income']; 
-  
 
-    const myAccounts=accountsStore()
-    const addAccountsPageVis = myAccounts.addAccountsPageVis; 
+    const myAccounts = accountsStore();
+    const addAccountsPageVis = myAccounts.addAccountsPageVis;
+
+    const addStore = useaddStore();
+    const accounts = computed(() => addStore.allAccounts); 
+
+    const fetchData = async () => {
+            try {
+                // 从localStorage中获取token
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    console.error('Token not found in localStorage');
+                    return;
+                }
+                // 设置axios请求的Authorization头
+                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+                // 发送GET请求到/accounts
+                const response = await axios.get('/accounts');
+                // 更新accounts响应式引用
+                await addStore.fetchAccounts(); 
+            } catch (error) {
+                console.error(error);
+            }
+    };
+  
+    fetchData();
+
 
     const createAccountsPage = ()=>{
       myAccounts.addAccountsPage()
@@ -97,7 +123,6 @@ export default {
         updateAccount(account);
       }
     }
-
 
     const updateAccount = async (account) =>{
       try {
@@ -117,7 +142,7 @@ export default {
       // 在这里处理删除成功后的逻辑，例如更新页面状态或显示消息
       //console.log('Account deleted successfully:', response.data);
       // 删除成功后，从页面的账单列表中移除该账单
-      accounts.value = accounts.value.filter(account => account._id !== accountId);
+      await addStore.fetchAccounts();
       } catch (error) {
       // 如果出现错误，打印错误信息或显示适当的错误消息
       console.error('Error deleting account:', error);
@@ -134,30 +159,6 @@ export default {
       });  
     }
     
-    onMounted(async () => {  
-      try {  
-        // 从localStorage中获取token，使用'token'作为键  
-        const token = localStorage.getItem('token');  
-        if (!token) {  
-          // 如果没有找到token，处理错误或重定向到登录页面  
-          console.error('Token not found in localStorage');  
-          return;  
-        }  
-  
-        // 设置axios请求的Authorization头  
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;  
-  
-        // 发送GET请求到/accounts  
-        const response = await axios.get('/accounts');  
-  
-        // 更新accounts响应式引用  
-        accounts.value = response.data;  
-  
-      } catch (error) {  
-        // 处理请求错误  
-        console.error(error);  
-      }  
-    });
 
     return { accounts,handleClose,categories,isEdit,toggleEdit,updateAccount,deleteAccount,createAccountsPage,myAccounts,addAccountsPageVis}
   }

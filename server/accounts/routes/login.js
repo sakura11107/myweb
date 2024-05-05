@@ -2,7 +2,7 @@ const express = require('express');
 var router=express.Router();
 const jwt = require('jsonwebtoken');
 
-const User = require('../model/UserSchema')
+const User = require('../model/UserSchema');
 var mongoose = require('mongoose');
 var Account = require('../model/AccountSchema');
 var userDB = mongoose.createConnection('mongodb://127.0.0.1:27017/user');

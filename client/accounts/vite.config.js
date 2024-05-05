@@ -31,6 +31,11 @@ export default defineConfig({
         changeOrigin:true,
         rewrite:path => path.replace(/^\/register/,'')
       },
+      '/user':{
+        target:'http://127.0.0.1:3000/user',
+        changeOrigin:true,
+        rewrite:path => path.replace(/^\/user/,'')
+      },
     }
   },
   resolve: {

@@ -1,12 +1,10 @@
 var express = require('express');
 var router = express.Router();
 const Account = require('../model/AccountSchema');
-const User = require('../model/UserSchema');
 const authMiddleware = require('../middleware/auth');
 
 /*连接数据库 */
 var mongoose = require('mongoose');
-const { lock } = require('./login');
 mongoose.connect('mongodb://127.0.0.1:27017/accounts');
 var db = mongoose.connection;
 db.on('error',console.error.bind(console,'连接失败'));
@@ -15,7 +13,6 @@ db.on('error',console.error.bind(console,'连接失败'));
 router.get('/accounts',authMiddleware, async function(req, res, next) {
   try {
       const userId = req.user._id; // 从请求对象中获取用户的唯一 ID
-      console.log(userId);
       const accounts = await Account.find({ userid: userId });
       res.json(accounts);
   } catch (error) {

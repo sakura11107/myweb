@@ -1,16 +1,18 @@
 <template>
-    <el-form class="login-form">
-      <el-form-item >
-        <el-input v-model="username" placeholder="请输入用户名"></el-input>
-      </el-form-item>
-      <el-form-item >
-        <el-input v-model="password" placeholder="请输入密码" type="password"></el-input>
-      </el-form-item>
-      <el-form-item class="login-buttons">
-        <el-button type="primary" @click="login">登录</el-button>
-        <el-button @click="register">注册</el-button>
-      </el-form-item>
-    </el-form>
+    <div class="login-container">
+      <el-form class="login-form">
+        <el-form-item >
+          <el-input v-model="username" placeholder="请输入用户名"></el-input>
+        </el-form-item>
+        <el-form-item >
+          <el-input v-model="password" placeholder="请输入密码" type="password"></el-input>
+        </el-form-item>
+        <el-form-item class="login-buttons">
+          <el-button type="primary" @click="login">登录</el-button>
+          <el-button @click="register">注册</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
   </template>
   
   <script>
@@ -75,15 +77,22 @@
   };
   </script>
   
-  <style>
+  <style scoped>
+    .login-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
     .login-form {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .login-buttons {
-        margin-top: 20px; /* 调整按钮之间的间距 */
+      margin-top: 20px; /* 调整按钮之间的间距 */
     }
   </style>
   

@@ -4,7 +4,7 @@
       <el-input v-model="amount" style="width: 240px" placeholder="金额" />
       <el-date-picker
           v-model="date"
-          type="date"
+          type="datetime"
           placeholder="选择时间"
         />
       <el-select
@@ -29,11 +29,13 @@
 import { ref } from 'vue'
 import axios from 'axios'
 import { accountsStore } from '@/store/accountsStore'
+import { useaddStore } from '@/store/useaddStore';
 
 export default {
         name: 'addAccounts',
         setup() {
           const {addAccountsPage,addAccountsPageVis} = accountsStore();
+          const useadd = useaddStore();
           const item = ref('')
           const amount = ref('')
           const date = ref('')
@@ -52,16 +54,14 @@ export default {
                 };
                 // 发送 POST 请求将数据发送到后端
                 const response = await axios.post('/accounts/add', formData);
-                // 提示用户添加成功
-                //alert('记账信息已添加！');
                 // 清空表单数据
                 item.value = '';
                 amount.value = '';
                 date.value = '';
                 category.value = '';
                 note.value = '';
-                addAccountsPage()
-                window.location.reload();
+                addAccountsPage();
+                await useadd.fetchAccounts(); // 添加记账后更新记账记录
                 return response;
                 // 在这里可以处理添加成功后的其他逻辑 
               } catch (error) {
