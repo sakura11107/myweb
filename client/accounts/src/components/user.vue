@@ -29,8 +29,10 @@ import { ref } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import { ElButton, ElInput, ElForm, ElFormItem } from 'element-plus';
+import { useactiveMenuStore } from '@/store/activeMenu';
 
 export default {
+  name:'user',
   components: {
     ElButton,
     ElInput,
@@ -41,6 +43,7 @@ export default {
     const loading = ref(true);
     const user = ref(null);
     const router = useRouter();
+    const activeMenu = useactiveMenuStore();
 
     const form = ref({
       newUsername: '',
@@ -87,6 +90,8 @@ export default {
     };
 
     const logout = () => {
+      localStorage.clear();
+      activeMenu.setactiveMenuIndex('');
       router.push('/');
     };
     return {

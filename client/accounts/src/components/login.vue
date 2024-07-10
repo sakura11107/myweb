@@ -20,6 +20,7 @@
   import axios from 'axios';
   import { useRouter } from 'vue-router';
   import { ElForm, ElFormItem, ElInput, ElButton } from 'element-plus';
+  import { useactiveMenuStore } from '@/store/activeMenu';
   
   export default {
     name:'login',
@@ -33,6 +34,7 @@
       const username = ref('');
       const password = ref('');
       const router = useRouter();
+      const activeMenu = useactiveMenuStore();
   
       const login = async (e) => {
         e.preventDefault();
@@ -44,6 +46,7 @@
           if (response.data.message === '登陆成功') {
             const token = response.data.token;
             localStorage.setItem('token', token);
+            activeMenu.setactiveMenuIndex('记账系统');
             router.push('/myAccounts');
           } else {
             alert(response.data.message);

@@ -22,6 +22,11 @@ const AccountSchema = new mongoose.Schema({
     type:String,
     required:true
   },
+  sort: {
+    type: String,
+    enum: ['文化休闲', '日用百货', '餐饮美食', '交通出行', '生活服务', '医疗保健'],
+    required: true
+  },
   userid:{
     type:mongoose.Schema.Types.ObjectId,
     ref:'User'

@@ -23,7 +23,7 @@ router.get('/accounts',authMiddleware, async function(req, res, next) {
 //添加账单
 router.post('/accounts/add',authMiddleware, async function (req, res, next) {
   try {
-    const{item, date, amount, category, note} =req.body;
+    const{item, date, amount, category, note, sort} =req.body;
     const userId = req.user._id;
     const newAccount = new Account({
       item,
@@ -31,6 +31,7 @@ router.post('/accounts/add',authMiddleware, async function (req, res, next) {
       amount,
       category,
       note,
+      sort,
       userid:userId
     });
     const savedAccount = await newAccount.save();
@@ -45,7 +46,7 @@ router.post('/accounts/add',authMiddleware, async function (req, res, next) {
 router.put('/accounts/:id', authMiddleware,async function(req, res, next) {
   try {
     const { id } = req.params;
-    const { item, date, amount, category, note } = req.body;
+    const { item, date, amount, category, note, sort } = req.body;
     const updatedAccount = await Account.findByIdAndUpdate(
       id,
       {
@@ -53,7 +54,8 @@ router.put('/accounts/:id', authMiddleware,async function(req, res, next) {
         date: new Date(date),
         amount,
         category,
-        note
+        note,
+        sort
       },
       { new: true }
     );

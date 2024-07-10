@@ -20,6 +20,9 @@
           :value="item.value"
         />
       </el-select>
+      <el-select v-model="sort" placeholder="分类" size="large" style="width: 240px;">
+        <el-option v-for="item in sortoptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+      </el-select>
       <el-input v-model="note" style="width: 240px" placeholder="备注" />
       <el-button type="primary" @click="add">确认</el-button>
     </div>
@@ -41,7 +44,16 @@ export default {
           const date = ref('')
           const category = ref('')
           const note = ref('')
+          const sort = ref('')
           const options = [{value: 'income',label: 'income'},{value: 'expense',label: 'expense',}]
+          const sortoptions = [
+                    {value: '文化休闲',label: '文化休闲'},
+                    {value: '日用百货',label: '日用百货'},
+                    {value: '餐饮美食',label: '餐饮美食'},
+                    {value: '交通出行',label: '交通出行'},
+                    {value: '生活服务',label: '生活服务'},
+                    {value: '医疗保健',label: '医疗保健'},
+                  ]
           const add = async () => {
               try {
                 // 构造记账信息对象
@@ -51,6 +63,7 @@ export default {
                   date: date.value,
                   category: category.value,
                   note: note.value,
+                  sort: sort.value,
                 };
                 // 发送 POST 请求将数据发送到后端
                 const response = await axios.post('/accounts/add', formData);
@@ -60,6 +73,7 @@ export default {
                 date.value = '';
                 category.value = '';
                 note.value = '';
+                sort.value = '';
                 addAccountsPage();
                 await useadd.fetchAccounts(); // 添加记账后更新记账记录
                 return response;
@@ -70,7 +84,7 @@ export default {
                 alert('添加记账信息失败！');
               }
             };
-          return { item,addAccountsPageVis,addAccountsPage,amount, date, category, note, options,add } 
+          return { item,addAccountsPageVis,addAccountsPage,amount, date, category, note, options,add , sortoptions,sort} 
         }
     }
 </script>

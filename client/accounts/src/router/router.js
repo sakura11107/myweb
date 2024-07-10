@@ -2,16 +2,18 @@ import {createRouter,createWebHistory} from 'vue-router';
 import MyAccounts from '../components/myAccounts.vue';
 import Login from '../components/login.vue'
 import User from '@/components/user.vue';
+import Earth from '@/components/earth.vue';
+import myMusic from '@/components/myMusic.vue';
 
 const router = createRouter({
     history:createWebHistory(),
     routes:[
         {path:'/myAccounts',component:MyAccounts,name:'记账系统',meta:{requiresAuth:true}},
         {path:'/',component:Login,name:'登陆'},
-        // {path:'/mymusic',name:'音乐'},
+        {path:'/mymusic',component:myMusic, name:'音乐',meta:{requiresAuth:true}},
         // {path:'/myblog',name:'博客'},
         // {path:'/myai',name:'AI对话'},
-        // {path:'/myothers',name:'其他功能'},
+        {path:'/earth',component:Earth,name:'地球'},
         {path:'/user',component:User,name:'用户',meta:{requiresAuth:true}}
     ]
 });
