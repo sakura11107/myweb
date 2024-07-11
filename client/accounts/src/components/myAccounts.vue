@@ -3,16 +3,22 @@
     <div class="header">
       <h2 class="records-title">记账记录</h2>
       <el-button type="primary" @click="createAccountsPage">添加账单</el-button>
+      <el-button type="primary" @click="analyzeAccounts">分析账单</el-button>
     </div>
     <el-dialog
       v-model="myAccounts.addAccountsPageVis"
       title="添加账单"
-      width="500"
+      width="800"
       :before-close="handleClose"
     >
       <addAccounts></addAccounts>
     </el-dialog>
-    
+
+    <el-drawer title="账单分析" :model-value="drawer" @close="drawer=false" >
+      <billAnalyze :visible="drawer" :bill-data="billData"></billAnalyze>
+    </el-drawer>
+
+
     <ul class="records-list" v-if="accounts.length">
       <li class="record-item" v-for="account in accounts" :key="account._id">
         <el-row class="row">
@@ -30,7 +36,7 @@
           </el-col>
           <el-col :span="8">
             <div :class="{'category': true, 'expense': account.category === 'expense', 'income': account.category === 'income'}">
-              <span v-if="!isEdit(account)">收入或支出：{{ account.category }}</span>
+              <span v-if="!isEdit(account)">{{getCategoryDisplayText(account.category)}}：{{ account.category }}</span>
               <el-select v-model="account.category" v-if="isEdit(account)">
                 <el-option v-for="category in categories" :key="category" :label="category" :value="category" />
               </el-select>
@@ -78,20 +84,47 @@
 import { computed, ref } from 'vue';
 import axios from 'axios';
 import addAccounts from './addAccounts.vue'
+import billAnalyze from './billAnalyze.vue'
 import { ElMessageBox } from 'element-plus'
 import { accountsStore } from '@/store/accountsStore';
 import { useaddStore } from '@/store/useaddStore';
 
 export default {
   name: 'myAccounts',
-  components: { addAccounts },
+  components: { addAccounts ,billAnalyze },
   setup() {
     const categories = ['expense', 'income']; 
     const myAccounts = accountsStore();
     const addAccountsPageVis = myAccounts.addAccountsPageVis;
 
     const addStore = useaddStore();
-    const accounts = computed(() => addStore.allAccounts); 
+    const accounts = computed(() => addStore.allAccounts);
+
+    const drawer = ref(false);
+    const billData = ref([]);
+    const analyzeAccounts = () => {
+      drawer.value = true;
+      fetchBillData();
+    };
+
+    const getCategoryDisplayText = computed (()=>{
+      return (category) => {
+        if (category === 'expense') {
+          return '支出'
+        } else {
+          return '收入'
+        }
+      }
+    })
+
+    const fetchBillData = async () =>{
+      try {
+        const response = await axios.get('/accounts');
+        billData.value = response.data;
+      } catch (error) {
+        console.error(error);
+      }
+    }
 
     const value = ref('');
     const options = [
@@ -118,6 +151,8 @@ export default {
       }
     };
     fetchData();
+
+
 
     const createAccountsPage = () => {
       myAccounts.addAccountsPage();
@@ -162,7 +197,7 @@ export default {
       });  
     };
 
-    return { accounts, handleClose, categories, isEdit, toggleEdit, updateAccount, deleteAccount, createAccountsPage, myAccounts, addAccountsPageVis, value, options };
+    return { accounts, handleClose, categories, isEdit, toggleEdit, updateAccount, deleteAccount, createAccountsPage, myAccounts, addAccountsPageVis, value, options, drawer, billData, analyzeAccounts, getCategoryDisplayText };
   }
 };
 </script>
