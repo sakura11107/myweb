@@ -28,7 +28,7 @@
 import { ref } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
-import { ElButton, ElInput, ElForm, ElFormItem } from 'element-plus';
+import { ElButton, ElInput, ElForm, ElFormItem,ElMessage } from 'element-plus';
 import { useactiveMenuStore } from '@/store/activeMenu';
 
 export default {
@@ -82,6 +82,7 @@ export default {
         user.value = null;
         if (response.data.message === '账号删除成功') {
           localStorage.clear();
+          ElMessage.success('账号删除成功');
           router.push('/');
         }
       } catch (error) {
@@ -92,6 +93,7 @@ export default {
     const logout = () => {
       localStorage.clear();
       activeMenu.setactiveMenuIndex('');
+      ElMessage.success('退出成功');
       router.push('/');
     };
     return {

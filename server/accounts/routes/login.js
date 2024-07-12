@@ -20,8 +20,8 @@ router.post('/register',async function(req,res,next){
         }else{
             const newUser = new User({username,password});
             await newUser.save();
-            const newAccount = new Account({item:'请输入事项',date:Date.now(),amount:0,category:'income',note:'请输入备注',userid:newUser._id});
-            await newAccount.save();
+            // const newAccount = new Account({item:'请输入事项',date:Date.now(),amount:0,category:'income',note:'请输入备注',sort:'餐饮美食',userid:newUser._id});
+            // await newAccount.save();
             return res.json({message:'注册成功'});
         }
     }catch(error){
