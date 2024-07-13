@@ -35,7 +35,7 @@ router.post('/user',authMiddleware,async function(req,res,next){
         { _id: userId },
         { $set: { username: username } }
         );
-        console.log('用户名已更新:', updateUsername);
+        //console.log('用户名已更新:', updateUsername);
     }
     // 如果请求中包含了新的密码，则更新密码
     if (password) {
@@ -44,7 +44,7 @@ router.post('/user',authMiddleware,async function(req,res,next){
         { _id: userId },
         { $set: { password: password } }
         );
-        console.log('密码已更新:', updatePassword);
+        //console.log('密码已更新:', updatePassword);
     }
     // 更新后再次获取用户信息，以便展示更新后的用户名和密码
     const updatedUser = await User.findById(userId);

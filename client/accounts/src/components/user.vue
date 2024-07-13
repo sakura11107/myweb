@@ -71,6 +71,7 @@ export default {
         user.value = response.data;
         form.value.newUsername = '';
         form.value.newPassword = '';
+        ElMessage.success('用户信息更新成功');
       } catch (error) {
         console.error('Error updating user:', error);
       }
