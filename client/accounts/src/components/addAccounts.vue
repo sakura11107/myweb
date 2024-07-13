@@ -30,13 +30,13 @@
 </template>
 
 <script>
-import { ref } from 'vue'
-import axios from 'axios'
-import { accountsStore } from '@/store/accountsStore'
+import { ref } from 'vue';
+import axios from 'axios';
+import { accountsStore } from '@/store/accountsStore';
 import { useaddStore } from '@/store/useaddStore';
 
 export default {
-  name: 'addAccounts',
+  name: 'AddAccounts',
   setup() {
     const { addAccountsPage, addAccountsPageVis } = accountsStore();
     const useadd = useaddStore();
@@ -83,6 +83,7 @@ export default {
         alert('添加记账信息失败！');
       }
     };
+
     return {
       item,
       addAccountsPageVis,
@@ -119,14 +120,15 @@ export default {
   align-self: flex-end;
 }
 
+/* 改进后的媒体查询，确保更好的响应式布局 */
 @media (min-width: 768px) {
   .addAccounts {
     flex-direction: row;
     flex-wrap: wrap;
   }
   .input-item {
-    flex: 1 1 45%;
-    min-width: 45%;
+    flex: 1 1 48%; /* 使用 48% 给元素留一点间距 */
+    min-width: 48%; /* 防止挤压 */
   }
   .button {
     flex: 1 1 100%;
