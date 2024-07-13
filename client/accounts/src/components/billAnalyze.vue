@@ -1,5 +1,7 @@
 <template>
-  <div ref="chartsContainer" class="chart-container">
+  <div>
+    <div ref="chartsContainer" class="chart-container"></div>
+    <div ref="linechartsContainer" class="chart-container"></div>
   </div>
 </template>
 
@@ -22,16 +24,26 @@ export default {
   },
   setup(props) {
     const chartsContainer = ref(null);
-    let chart = null;
+    const linechartsContainer = ref(null);
+    let barChart = null;
+    let lineChart = null;
 
-    const initChart = () => {
-      if (chart) {
-        chart.dispose(); // 销毁图表
+    const formatDate = (dateString) => {
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    const initBarChart = () => {
+      if (barChart) {
+        barChart.dispose(); // 销毁柱状图
       }
       if (chartsContainer.value === null) {
         return;
       }
-      chart = echarts.init(chartsContainer.value);
+      barChart = echarts.init(chartsContainer.value);
 
       const option = {
         title: {
@@ -61,39 +73,93 @@ export default {
           }
         ]
       };
-      chart.setOption(option);
+      barChart.setOption(option);
     };
 
-    const resizeChart = () => {
-      if (chart) {
-        chart.resize();
+    const initLineChart = () => {
+      if (lineChart) {
+        lineChart.dispose(); // 销毁折线图
+      }
+      if (linechartsContainer.value === null) {
+        return;
+      }
+      lineChart = echarts.init(linechartsContainer.value);
+
+      const option = {
+        title: {
+          text: '账单分析时间折线图',
+        },
+        tooltip: {
+          formatter: function (params) {
+            const categoryText = params.data.itemStyle.color === '#f56c6c' ? '支出' : '收入';
+            const formattedDate = formatDate(params.name);
+            return `${formattedDate}: ${categoryText}${params.value} RMB`;
+          }
+        },
+        legend: { data: ['时间'], color: ['#f56c6c'] },
+        xAxis: {
+          type: 'category',
+          data: props.billData.map(item => item.date),
+          axisLabel: {
+            formatter: (value) => formatDate(value) // 格式化日期
+          }
+        },
+        yAxis: {},
+        series: [
+          {
+            name: '时间',
+            type: 'line',
+            data: props.billData.map(item => ({
+              value: item.amount,
+              itemStyle: {
+                color: item.category === 'expense' ? '#f56c6c' : '#67c23a'
+              }
+            }))
+          }
+        ]
+      };
+      lineChart.setOption(option);
+    };
+
+    const resizeCharts = () => {
+      if (barChart) {
+        barChart.resize();
+      }
+      if (lineChart) {
+        lineChart.resize();
       }
     };
 
     watch(() => [props.visible, props.billData], ([visible, billData]) => {
       if (visible && billData.length > 0) {
         nextTick(() => {
-          initChart();
+          initBarChart();
+          initLineChart();
         });
       }
     });
 
     onMounted(() => {
-      window.addEventListener('resize', resizeChart);
+      window.addEventListener('resize', resizeCharts);
       if (props.visible && props.billData.length > 0) {
-        initChart();
+        initBarChart();
+        initLineChart();
       }
     });
 
     onUnmounted(() => {
-      if (chart) {
-        chart.dispose();
+      if (barChart) {
+        barChart.dispose();
       }
-      window.removeEventListener('resize', resizeChart);
+      if (lineChart) {
+        lineChart.dispose();
+      }
+      window.removeEventListener('resize', resizeCharts);
     });
 
     return {
-      chartsContainer
+      chartsContainer,
+      linechartsContainer
     };
   }
 };
@@ -103,6 +169,7 @@ export default {
 .chart-container {
   width: 100%;
   height: 400px;
+  margin-bottom: 20px; /* 添加间隔 */
 }
 
 /* 媒体查询，用于适配移动设备 */
